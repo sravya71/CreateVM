@@ -1,0 +1,175 @@
+{
+  "variables": {
+   "VmName": "MyVm",
+   "ResourceGroupName": "ResourceGroupName",
+   "NicName": "MyNic",
+   "VirtualNetworkName": "VirtualNetworkName",
+   "VirtualAddressPrefix": "10.0.0.0/24",
+   "PublicIP": "MyPublicIPAddress",
+   "Subnet1Name": "Subnet1Name",
+   "Subnet1Prefix": "(concat.parameters('Subnet1Prefix'))",
+   "Subnet2Name": "Subnet2Name",
+   "Subnet2Prefix": "(concat.parameters('Subnet2Prefix'))",
+   "StorageAccountName": "StorageAccountName",
+   "VMSize": "200",
+   "Location": "(concat.parameters('ResourceGroupLocation'))"
+  },
+  "Resources": [
+   {
+      "type": "Microsoft.Resources/ResourceGroups",
+      "apiversion": "2018-05-01",
+      "name": "(concat.parameters('ResourceGroupName'))",
+      "location": "(concat.parameters('ResourceGroupLocation'))",
+      "Comments": "(Resource Group Resource has been created in the Resource Group location specified by the user)",
+       "tags": "ResourceGroup1"
+   },
+   {
+       "type": "Microsoft.Networks/VirtualNetworks",
+       "apiversion": "2017-10-01",
+       "name": "(variables('VirtualNetworkName'))",
+       "location": "(variables('location'))",
+       "tags": "VirtualNetwork1",
+       "comments": "(Virtual Network Resource has been created in the Resource Group Location specified by the user )",
+       "Properties":{
+         "AddressSpace": {
+          "AddressPrefix": [
+            "(variables(VirtualAddressPrefix))"
+          ]
+         },
+         "Subnets": [
+           {
+             "type": "subnets",
+             "apiversion": "2017-10-01",
+             "name": "(concat.parameters('Subnet1'))",
+             "location": "(varaibles('Location'))",
+             "tags": "Subnet1",
+             "Comments": "(Subnet1 Resource have been created in the Virtual Network with the address space specified by user)",
+             "DependsOn": 
+               "(concat.parameters('VirtualNetworkName'))",
+             "Properties": {
+               "addressPefixes": [
+                  "(variables('Subnet1Prefix'))"
+               ]
+             }
+           },
+           {
+              "type": "subnets",
+              "apiversion": "2017-10-01",
+              "name": "(concat.parameters('Subnet2))",
+              "location": "(variables('Location'))",
+              "tags": "Subnet2",
+              "Comments": "(Subnet 2 Resource have been created in the VNET with the address space specified by the user)",
+              "DependsOn": 
+               "(concat.parameters('VirtualNetworkName'))",
+              "properties":{
+                "AddressPrefix": "(variables('Subnet2Prefix')"
+              }
+           }
+         ]
+       }
+   },
+   {
+       "type": "Microsoft.Storage/storageAccounts",
+       "apiversion": "2017-10-01",
+       "name": "(concat.parameters('StorageAccountName'))",
+       "location": "(varaibles('Location'))",
+       "comments": "(Storage Account Resource has been created in the Resource group Location)",
+       "tags": "StorageAccount",
+       "sku": {
+        "name": "Standard_LRS"
+       },
+       "kind": "Storage",
+       "Properties": {
+       }
+   }, 
+   {
+        "type": "Microsoft.Network/publicIPAddresses",
+        "apiversion": "2017-10-01",
+        "name": "(variables('PublicIPAddress'))",
+        "Comments": "(Public Ip address resource has been created in the Resource group Location)",
+        "location": "(variables('Location'))",
+        "tags": "PublicIPAddress",
+        "properties": {
+          "publicIPAllocationMethod": "Dynamic",
+          "DnsSettings": {
+            "domainNameLablel": "[concat.parameters('DNSLabel')]"
+          }
+        }
+   },
+   
+   {
+       "type": "Microsoft.Networks/NetworkInterface",
+       "apiversion": "2017-10-01",
+       "name": "(concat.parameters('NetworkInterface'))",
+       "location": "(varaibles('Location'))",
+       "tags": "NetworkInterface1",
+       "comments": "(Network Interface resource has been specified in the resource group Location)",
+       "DependsOn": 
+         "[concat('Microsoft.Network/publicIPAddresses/', variables('PublicIPAddress'))]",
+       "Properties":{
+         "IpConfigurations": {
+          "IPAddressAllocation": "Dynamic"
+         }
+       }
+             
+   },
+   {  
+      "type": "Microsoft.Compute/VirtualMachine",
+      "apiversion": "2017-10-01",
+      "name": "(variables('VmName'), CopyIndex())",
+      "location": "(variables('Location'))",
+      "tags": "VirtualMachine1",
+      "Copy": {
+       "Name": "(VirtualMachineInstances, CopyIndex())",
+       "count": "(concat.parameters('VMCount'))"
+      },
+      "Comments": "(Virtual Machine resource has been created with the properties required in the Resource Location of the Resource Group Location)",
+       "DependsOn":
+       [
+         "(concat.parameters('Microsoft.Networks/NetworkInterfaces', varaibles('NicName')))",
+         "(concat.parameters('Microsoft.Networks/VirtualNetworks',variables('VirtualNetworkName'))"
+       ],
+       "Properties": 
+       {
+        "HardwareProfile": {
+          "Vmsize": "(concat.parameters('VMSize'),CopyIndex())"
+        },
+        "OsProfile":{
+        "ComputerName": "(variables('VmName'),CopyIndex())",
+        "AdminUserName": "(concat.parameters('AdminUserName'), CopyIndex())" ,
+        "AdminPassword": "(concat.parameters('AdminPassword'))"
+        },
+         "StorageProfile": 
+         {
+           "ImageRefernce": 
+           {
+             "publisher":"Windows Server 2019 Datacenter",
+             "offer":"WindowsVersion",
+             "sku":"Standard D2s V3"
+           }
+         },
+         "OSDisk": 
+         {
+           "OS Disk type" : "Premimum SSD"
+         },
+         "DataDisk":
+         { 
+           "size": " 1024 GB",
+           "Name": "(concat.parameters('VmName'))",
+           "lun": "0",
+           "Disk type": "Premimum SSD"
+         },
+         "NetworkProfile":  
+         {"(concat.parameters('Microsoft.Networks/NetworksInterfaces', variables('MyNic')))" },
+         "DiagnosticsProfile": {
+          "BootDiagnostics": "(Refernce(ResourceID('Microsoft.Storage/storageAccount', concat.parameters('StorageAccountName'))"
+         }
+       }
+      }
+  ],
+  "Outputs": {
+    "type": "string",
+    "Value": "(concat.parameters('DNSLabel'),variables('VmName'))",
+    "Comments": "(Output with the VM Name will be the Output)"
+  }
+}

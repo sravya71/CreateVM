@@ -1,0 +1,139 @@
+{
+  "$schema":"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion":"1.0.0.0",
+  "parameters":{
+     "ResourceGroupName":{
+        "comments": "(Resouce Group Name will be specfied by the user)",
+        "type":"string",
+        "minLength":"0",
+        "maxLength":"200",
+        "metadata":{
+           "Description":"(Please Specify the Resource Group Name)"
+        }
+     },
+     "ResourceGroupLocation":{
+        "comments": "(Resource Group Location will be specified by the user)",
+        "type":"string",
+        "defaultValue":"East US",
+        "minLength":"0",
+        "maxLength":"200",
+        "allowedValues":[
+           "East US 2",
+           "South Central US",
+           "West US 2",
+           "South Africa North",
+           "Southeast Asia"
+        ],
+        "metadata":{
+           "Description":"(Please specify the Resource Group Location )"
+        }
+     },
+     "VirtualNetworkName":{
+        "comments": "(VirtualNetwork Name will be specfied by the user)",
+        "type":"string",
+        "maxLength":"30",
+        "Metadata":{
+           "Description":"(Please specify the Virtual Network Name)"
+        }
+     },
+     "Subnet1Name":{
+        "comments": "(Subnet1 Name will be specfied by the user)",
+        "type":"string",
+        "defaultValue":"Subnet1Name",
+        "metadata":{
+           "Description":"(Please specify the name of the Subnet1)"
+        }
+     },
+     "Subnet1Prefix":{
+        "comments": "(Subnet 1 Prefix will be specfied by the user)",
+        "type":"string",
+        "defaultValue":"10.0.0.0/24",
+        "metadata":{
+           "Description":"(Please specify the Address Prefix for Subnet1)"
+        }
+     },
+     "Subnet2Name":{
+        "comments": "(Subnet 2 Name will be specfied by the user)",
+        "type":"string",
+        "defaultValue":"Subnet2Name",
+        "metadata":{
+           "Description":"(Please specify the name of the Subnet2)"
+        }
+     },
+     "Subnet2Prefix":{
+        "comments": "(Subnet 2 Prefix will be specfied by the user)",
+        "type":"string",
+        "defaultValue":"10.0.0.0/24",
+        "metadata":{
+           "Description":"(Please specify the Address Prefix of the Subnet2)"
+        }
+     },
+     "StorageAccountName":{
+        "Comments": "(Storage Account Name will be specified by the User)",
+        "Type":"string",
+        "DefaultValue":"StorageAccountName",
+        "MaxLength":"30",
+        "Metadata":{
+           "Description":"(Please Specify the Storage Account Name)"
+        }
+     },
+     "AdminUserName":{
+        "comments": "(Admin User will be specified by the User)",
+        "type":"string",
+        "minValue":"0",
+        "maxlength":"150",
+        "metadata":{
+           "description":"(Please specify the User Name required for the Admin)"
+        }
+     },
+     "AdminPassword":{
+        "comments": "(Admin Password will be specified by the user)",
+        "type":"securestring",
+        "minLength":"0",
+        "maxLength":"15",
+        "metadata":{
+           "description":"(Please specify the password required for the User Name)"
+        }
+     },
+     "DNSLabel":{
+        "comments": "(DNS Label will be specified by the User)",
+        "type":"string",
+        "defaultValue":"(concat.paramaters('AdminUserName'))",
+        "maxLength":"200",
+        "metadata":{
+           "description":"(Please specify the Domain Name Server for the Virtual Machine)"
+        }
+     },
+     "WindowsOSversion":{
+        "comments": "(Windows OS version will be specified by the user)",
+        "type":"string",
+        "defaultValue":"2019-Datacenter",
+        "maxLength":"30",
+        "minValue":"0",
+        "AllowedValues":[
+           "Ubuntu Server 16.04 LTS",
+           "Windows Server 2019 Datacenter",
+           "Windows Server 2016 Datacenter",
+           "Windows Server 2012 R2 Datacenter",
+           "CentOs-based 7.5"
+        ],
+        "metadata":{
+           "description":"(Please specify the windows OS version of the VM)"
+        }
+     },
+     "VMSize":{
+        "Comments": "(VmSize will be specified by the VMSize)",
+        "type":"string",
+        "metadata":{
+           "description":"(Please specify the VMSize)"
+        }
+     },
+     "VMCount": {
+      "type": "int",
+      "comments": "(The Virtual Machines required for the deploying the Virtual Machine are specfied by the user)",
+      "Metadata": {
+      "Description": "(Please specify the number of the VMs required for the Virtual Machines)"
+     }
+     }
+  }
+}
